@@ -2,7 +2,7 @@ package presenter
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"simple-todo-list/pkg/entities"
+	"simple-todo-list/internal/entities"
 )
 
 // Book is the presenter object which will be passed in the response by Handler

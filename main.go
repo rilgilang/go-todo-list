@@ -5,10 +5,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"log"
-	"simple-todo-list/api/routes"
 	"simple-todo-list/bootstrap"
+	routes2 "simple-todo-list/internal/api/routes"
+	"simple-todo-list/internal/middlewares/jwt"
+	"simple-todo-list/internal/repositries"
+	"simple-todo-list/internal/service"
 	"simple-todo-list/migrations"
-	"simple-todo-list/pkg/book"
 	"strings"
 )
 
@@ -28,8 +30,13 @@ func main() {
 
 	fmt.Println("Migration success!")
 
-	bookRepo := book.NewRepo(db)
-	bookService := book.NewService(bookRepo)
+	bookRepo := repositries.NewBookRepo(db)
+	userRepo := repositries.NewUserRepo(db)
+
+	middleware := jwt.NewAuthMiddleware(userRepo)
+
+	bookService := service.NewBookService(bookRepo)
+	userService := service.NewAuthService(middleware, userRepo)
 
 	app := fiber.New()
 	app.Use(cors.New())
@@ -42,10 +49,8 @@ func main() {
 		AllowMethods: strings.Join([]string{
 			fiber.MethodGet,
 			fiber.MethodPost,
-			fiber.MethodHead,
 			fiber.MethodPut,
 			fiber.MethodDelete,
-			fiber.MethodPatch,
 		}, ","),
 		AllowHeaders:     "",
 		AllowCredentials: false,
@@ -55,9 +60,10 @@ func main() {
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.Send([]byte("Welcome to the clean-architecture mongo book shop!"))
 	})
+
 	api := app.Group("/api")
-	routes.BookRouter(api, bookService)
-	routes.BookRouter(api, bookService)
+	routes2.BookRouter(api, middleware, bookService)
+	routes2.LoginRouter(api, userService)
 
 	log.Fatal(app.Listen(":8080"))
 }

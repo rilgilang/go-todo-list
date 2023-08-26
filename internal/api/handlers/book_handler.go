@@ -1,18 +1,16 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/pkg/errors"
 	"net/http"
-	"simple-todo-list/api/presenter"
-	"simple-todo-list/pkg/book"
-	"simple-todo-list/pkg/entities"
-	"time"
+	"simple-todo-list/internal/api/presenter"
+	"simple-todo-list/internal/entities"
+	"simple-todo-list/internal/service"
 )
 
 // AddBook is handler/controller which creates Books in the BookShop
-func AddBook(service book.Service) fiber.Handler {
+func AddBook(service service.BookService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody entities.Book
 		err := c.BodyParser(&requestBody)
@@ -35,7 +33,7 @@ func AddBook(service book.Service) fiber.Handler {
 }
 
 // UpdateBook is handler/controller which updates data of Books in the BookShop
-func UpdateBook(service book.Service) fiber.Handler {
+func UpdateBook(service service.BookService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody entities.Book
 		err := c.BodyParser(&requestBody)
@@ -53,7 +51,7 @@ func UpdateBook(service book.Service) fiber.Handler {
 }
 
 // RemoveBook is handler/controller which removes Books from the BookShop
-func RemoveBook(service book.Service) fiber.Handler {
+func RemoveBook(service service.BookService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody entities.DeleteRequest
 		err := c.BodyParser(&requestBody)
@@ -76,8 +74,7 @@ func RemoveBook(service book.Service) fiber.Handler {
 }
 
 // GetBooks is handler/controller which lists all Books from the BookShop
-func GetBooks(service book.Service) fiber.Handler {
-	fmt.Printf("get all books %v\n", time.Now())
+func GetBooks(service service.BookService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		fetched, err := service.FetchBooks()
 		if err != nil {
