@@ -30,12 +30,14 @@ func main() {
 
 	fmt.Println("Migration success!")
 
-	bookRepo := repositries.NewBookRepo(db)
+	//bookRepo := repositries.NewBookRepo(db)
 	userRepo := repositries.NewUserRepo(db)
+	todoRepo := repositries.NewTodoRepo(db)
 
 	middleware := jwt.NewAuthMiddleware(userRepo)
 
-	bookService := service.NewBookService(bookRepo)
+	//bookService := service.NewBookService(bookRepo)
+	todoService := service.NewTodoService(todoRepo)
 	userService := service.NewAuthService(middleware, userRepo)
 
 	app := fiber.New()
@@ -58,11 +60,12 @@ func main() {
 		MaxAge:           0}))
 
 	app.Get("/", func(ctx *fiber.Ctx) error {
-		return ctx.Send([]byte("Welcome to the clean-architecture mongo book shop!"))
+		return ctx.Send([]byte("Welcome to the clean-architecture todo list!"))
 	})
 
 	api := app.Group("/api")
-	routes2.BookRouter(api, middleware, bookService)
+	//routes2.BookRouter(api, middleware, bookService)
+	routes2.TodoRouter(api, middleware, todoService)
 	routes2.LoginRouter(api, userService)
 
 	log.Fatal(app.Listen(":8080"))

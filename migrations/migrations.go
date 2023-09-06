@@ -6,5 +6,5 @@ import (
 )
 
 func AutoMigration(db *gorm.DB) {
-	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&entities.Book{}, &entities.User{})
+	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&entities.Todo{}, &entities.User{})
 }

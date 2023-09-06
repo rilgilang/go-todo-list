@@ -44,7 +44,7 @@ func (s *authService) Login(user *entities.User) (*entities.User, *string, error
 		return nil, nil, errors.New("username or password is wrong!")
 	}
 
-	token, err := s.jwtMdwr.GenerateToken(userData, 5, "my_secret_key")
+	token, err := s.jwtMdwr.GenerateToken(userData, 20, "my_secret_key")
 
 	if err != nil {
 		return nil, nil, errors.New(consts.InternalServerError)

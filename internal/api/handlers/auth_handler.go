@@ -16,11 +16,11 @@ func Login(service service.AuthService) fiber.Handler {
 		err := c.BodyParser(&requestBody)
 		if err != nil {
 			c.Status(http.StatusBadRequest)
-			return c.JSON(presenter.BookErrorResponse(err))
+			return c.JSON(presenter.AuthErrorResponse(err))
 		}
 		if requestBody.Username == "" || requestBody.Password == "" {
 			c.Status(http.StatusBadRequest)
-			return c.JSON(presenter.BookErrorResponse(errors.New(
+			return c.JSON(presenter.AuthErrorResponse(errors.New(
 				"Please specify title and author")))
 		}
 		user, token, err := service.Login(&requestBody)
@@ -47,11 +47,11 @@ func Register(service service.AuthService) fiber.Handler {
 		err := c.BodyParser(&requestBody)
 		if err != nil {
 			c.Status(http.StatusBadRequest)
-			return c.JSON(presenter.BookErrorResponse(err))
+			return c.JSON(presenter.AuthErrorResponse(err))
 		}
 		if requestBody.Username == "" || requestBody.Password == "" {
 			c.Status(http.StatusBadRequest)
-			return c.JSON(presenter.BookErrorResponse(errors.New(
+			return c.JSON(presenter.AuthErrorResponse(errors.New(
 				"Please specify title and author")))
 		}
 

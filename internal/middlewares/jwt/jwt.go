@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 	"simple-todo-list/internal/api/presenter"
+	"simple-todo-list/internal/consts"
 	"simple-todo-list/internal/entities"
 	"simple-todo-list/internal/repositries"
 	"strings"
@@ -93,6 +94,7 @@ func (m *authMiddlewares) ValidateToken() fiber.Handler {
 			return c.JSON(presenter.AuthErrorResponse(err))
 		}
 
+		c.Locals(consts.UserId, claims.ID)
 		return c.Next()
 	}
 }
