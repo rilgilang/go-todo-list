@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"log"
 	"simple-todo-list/bootstrap"
+	"simple-todo-list/config/yaml"
 	routes2 "simple-todo-list/internal/api/routes"
 	"simple-todo-list/internal/middlewares/jwt"
 	"simple-todo-list/internal/repositries"
@@ -15,7 +16,12 @@ import (
 )
 
 func main() {
-	db, err := bootstrap.DatabaseConnection()
+	cfg, err := yaml.NewConfig()
+	if err != nil {
+		log.Fatal(fmt.Sprintf(`read cfg yaml got error : %v`, err))
+	}
+
+	db, err := bootstrap.DatabaseConnection(cfg)
 	if err != nil {
 		log.Fatal(fmt.Sprintf(`db connection error got : %v`, err))
 	}
@@ -68,5 +74,5 @@ func main() {
 	routes2.TodoRouter(api, middleware, todoService)
 	routes2.LoginRouter(api, userService)
 
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen(fmt.Sprintf(`:%s`, cfg.App.Port)))
 }
