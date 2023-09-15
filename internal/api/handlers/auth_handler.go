@@ -21,7 +21,7 @@ func Login(service service.AuthService) fiber.Handler {
 		if requestBody.Username == "" || requestBody.Password == "" {
 			c.Status(http.StatusBadRequest)
 			return c.JSON(presenter.AuthErrorResponse(errors.New(
-				"Please specify title and author")))
+				"Please specify username and password")))
 		}
 		user, token, err := service.Login(&requestBody)
 		//only internal server error
@@ -52,7 +52,7 @@ func Register(service service.AuthService) fiber.Handler {
 		if requestBody.Username == "" || requestBody.Password == "" {
 			c.Status(http.StatusBadRequest)
 			return c.JSON(presenter.AuthErrorResponse(errors.New(
-				"Please specify title and author")))
+				"Please specify username and password")))
 		}
 
 		user, token, err := service.Register(&requestBody)

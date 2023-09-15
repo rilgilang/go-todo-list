@@ -42,7 +42,7 @@ func (r *todoRepository) CreateTodo(todo *entities.Todo) (*entities.Todo, error)
 
 func (r *todoRepository) ReadTodo(userId int) (*[]presenter.Todo, error) {
 	var todos []presenter.Todo
-	result := r.db.Where("user_id = ?", userId).Where("deleted_at IS NULL").Find(&todos)
+	result := r.db.Where("user_id = ?", userId).Where("deleted_at IS NULL").Order("created_at desc").Find(&todos)
 	return &todos, result.Error
 }
 

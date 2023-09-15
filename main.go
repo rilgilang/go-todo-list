@@ -12,7 +12,6 @@ import (
 	"simple-todo-list/internal/repositries"
 	"simple-todo-list/internal/service"
 	"simple-todo-list/migrations"
-	"strings"
 )
 
 func main() {
@@ -40,7 +39,7 @@ func main() {
 	userRepo := repositries.NewUserRepo(db)
 	todoRepo := repositries.NewTodoRepo(db)
 
-	middleware := jwt.NewAuthMiddleware(userRepo)
+	middleware := jwt.NewAuthMiddleware(userRepo, cfg)
 
 	//bookService := service.NewBookService(bookRepo)
 	todoService := service.NewTodoService(todoRepo)
@@ -51,19 +50,11 @@ func main() {
 
 	// Or extend your config for customization
 	app.Use(cors.New(cors.Config{
-		Next:             nil,
-		AllowOriginsFunc: nil,
+		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin",
 		AllowOrigins:     "*",
-		AllowMethods: strings.Join([]string{
-			fiber.MethodGet,
-			fiber.MethodPost,
-			fiber.MethodPut,
-			fiber.MethodDelete,
-		}, ","),
-		AllowHeaders:     "",
-		AllowCredentials: false,
-		ExposeHeaders:    "",
-		MaxAge:           0}))
+		AllowCredentials: true,
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+	}))
 
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.Send([]byte("Welcome to the clean-architecture todo list!"))

@@ -44,7 +44,7 @@ func (s *authService) Login(user *entities.User) (*entities.User, *string, error
 		return nil, nil, errors.New("username or password is wrong!")
 	}
 
-	token, err := s.jwtMdwr.GenerateToken(userData, 20, "my_secret_key")
+	token, err := s.jwtMdwr.GenerateToken(userData)
 
 	if err != nil {
 		return nil, nil, errors.New(consts.InternalServerError)
@@ -86,7 +86,7 @@ func (s *authService) Register(user *entities.User) (*entities.User, *string, er
 		return nil, nil, errors.New(consts.InternalServerError)
 	}
 
-	token, err := s.jwtMdwr.GenerateToken(newUser, 5, "my_secret_key")
+	token, err := s.jwtMdwr.GenerateToken(newUser)
 
 	if err != nil {
 		return nil, nil, errors.New(consts.InternalServerError)

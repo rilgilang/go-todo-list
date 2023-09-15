@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
+	"simple-todo-list/config/yaml"
 	"simple-todo-list/internal/api/presenter"
 	"simple-todo-list/internal/consts"
 	"simple-todo-list/internal/entities"
@@ -13,12 +14,13 @@ import (
 )
 
 type AuthMiddleware interface {
-	GenerateToken(user *entities.User, expirationMinute int, jwtKey string) (*string, error)
+	GenerateToken(user *entities.User) (*string, error)
 	ValidateToken() fiber.Handler
 }
 
 type authMiddlewares struct {
 	userRepo repositries.UserRepository
+	cfg      *yaml.Config
 }
 
 type Claims struct {
@@ -27,15 +29,18 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func NewAuthMiddleware(userRepo repositries.UserRepository) AuthMiddleware {
+func NewAuthMiddleware(userRepo repositries.UserRepository, cfg *yaml.Config) AuthMiddleware {
 	return &authMiddlewares{
 		userRepo: userRepo,
+		cfg:      cfg,
 	}
 }
 
-func (m *authMiddlewares) GenerateToken(user *entities.User, expirationMinute int, jwtKey string) (*string, error) {
+func (m *authMiddlewares) GenerateToken(user *entities.User) (*string, error) {
+	jwtKey := m.cfg.JWT.Key
+	expireMinute := m.cfg.JWT.ExpiredMinute
 	// Declare the expiration time of the token
-	expirationTime := time.Now().Add(time.Duration(expirationMinute) * time.Minute)
+	expirationTime := time.Now().Add(time.Duration(expireMinute) * time.Minute)
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &Claims{
 		ID:       user.ID,
@@ -60,6 +65,7 @@ func (m *authMiddlewares) GenerateToken(user *entities.User, expirationMinute in
 
 func (m *authMiddlewares) ValidateToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		jwtKey := m.cfg.JWT.Key
 		authorization := strings.Split(c.GetReqHeaders()["Authorization"], "Bearer ")
 
 		if len(authorization) != 2 {
@@ -78,7 +84,7 @@ func (m *authMiddlewares) ValidateToken() fiber.Handler {
 		// if the token is invalid (if it has expired according to the expiry time we set on sign in),
 		// or if the signature does not match
 		tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-			return []byte("my_secret_key"), nil
+			return []byte(jwtKey), nil
 		})
 
 		if err != nil {

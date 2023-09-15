@@ -8,6 +8,7 @@ import (
 type Config struct {
 	App App `yaml:"app,omitempty" json:"app"`
 	DB  DB  `yaml:"db" json:"db"`
+	JWT JWT `yaml:"jwt" json:"jwt"`
 }
 
 type App struct {
@@ -29,6 +30,11 @@ type DB struct {
 	//TimeOutSecond int    `yaml:"time_out_second" json:"time_out_second"`
 	//LifeTimeMs    int    `yaml:"life_time_ms" json:"life_time_ms"`
 	//Charset       string `yaml:"charset" json:"charset"`
+}
+
+type JWT struct {
+	Key           string `yaml:"key" json:"key"`
+	ExpiredMinute int    `yaml:"expired_minute" json:"expired_minute"`
 }
 
 func NewConfig() (*Config, error) {
